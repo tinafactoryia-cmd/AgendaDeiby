@@ -1,0 +1,21 @@
+:root {
+  --page: #f4f7f2;
+  --surface: #fff;
+  --ink: #19221b;
+  --muted: #6c786f;
+  --green: #2e6440;
+  --border: #e0e7e1;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #263029;
+  background: var(--page);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+html { min-width: 20rem; background: var(--page); }
+body { min-width: 20rem; min-height: 100svh; margin: 0; }
+button { cursor: pointer; }
+button:focus-visible { outline: 3px solid #90bd9d; outline-offset: 3px; }
+p { line-height: 1.5; }

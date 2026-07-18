@@ -1,0 +1,593 @@
+# Documento maestro: Agenda personal y control de horas
+
+## 1. Objetivo del proyecto
+
+Crear una aplicación sencilla, visual y cómoda para que una persona pueda:
+
+- Consultar lo importante del día de un vistazo.
+- Crear y organizar tareas personales o de trabajo.
+- Apuntar sus propias citas, por ejemplo con un cliente o con el médico.
+- Registrar el inicio y el final de su jornada laboral.
+- Consultar las horas trabajadas por día, semana y mes.
+- Utilizar la aplicación desde el móvil y desde el ordenador.
+
+La aplicación será una **web instalable (PWA)**. Se abrirá en el navegador, pero podrá añadirse a la pantalla de inicio del móvil y utilizarse de forma parecida a una aplicación normal.
+
+---
+
+## 2. Principio fundamental
+
+El proyecto se construirá poco a poco. Cada fase deberá funcionar correctamente antes de comenzar la siguiente.
+
+No se añadirán servicios o tecnologías que todavía no sean necesarios.
+
+La primera versión no necesita:
+
+- Appsmith.
+- Cal.com.
+- n8n.
+- Telegram.
+- Un VPS propio.
+
+---
+
+## 3. Solución propuesta
+
+```text
+┌───────────────────────────────────┐
+│ Aplicación web instalable (PWA)   │
+│                                   │
+│  Hoy · Agenda · Horas · Ajustes   │
+└─────────────────┬─────────────────┘
+                  │ Conexión segura
+                  ▼
+┌───────────────────────────────────┐
+│ Supabase                          │
+│                                   │
+│  Usuarios · Base de datos         │
+└───────────────────────────────────┘
+```
+
+### Aplicación web
+
+Será la interfaz que utilizará el usuario.
+
+Tendrá:
+
+- Un diseño pensado primero para móvil.
+- Botones grandes.
+- Textos claros.
+- Navegación sencilla.
+- Compatibilidad con móvil y ordenador.
+- Posibilidad de instalarse en la pantalla de inicio.
+
+### Supabase
+
+Supabase proporcionará:
+
+- Inicio de sesión seguro.
+- Base de datos PostgreSQL gestionada.
+- Separación segura de los datos de cada usuario.
+- Conexión segura sin exponer la base de datos públicamente.
+- Una base preparada para añadir más usuarios en el futuro.
+
+---
+
+## 4. Pantallas principales
+
+### 4.1. Pantalla “Hoy”
+
+Será la pantalla inicial de la aplicación.
+
+Mostrará:
+
+- Las horas trabajadas durante el día.
+- El estado de la jornada:
+  - Sin comenzar.
+  - En curso.
+  - Finalizada.
+- Un botón para iniciar o terminar la jornada.
+- La próxima cita.
+- Las citas del día.
+- Las tareas pendientes para hoy.
+- Un acceso rápido para crear una tarea o una cita.
+
+Ejemplo aproximado:
+
+```text
+┌──────────────────────────────┐
+│ Buenos días                  │
+│                              │
+│ Hoy llevas 5 h 32 min        │
+│ [ Terminar jornada ]         │
+│                              │
+│ Próxima cita                 │
+│ 17:00 · Visita médica        │
+│                              │
+│ Tareas de hoy                │
+│ □ Enviar presupuesto         │
+│ □ Llamar al proveedor        │
+│                              │
+│             [ + Añadir ]     │
+├──────────────────────────────┤
+│ Hoy · Agenda · Horas · Más   │
+└──────────────────────────────┘
+```
+
+---
+
+### 4.2. Pantalla “Agenda”
+
+Permitirá:
+
+- Ver un calendario mensual.
+- Seleccionar un día.
+- Consultar las tareas y citas de ese día.
+- Crear, editar y eliminar citas.
+- Crear, editar, completar y eliminar tareas.
+- Diferenciar visualmente las tareas de las citas.
+
+#### Tareas
+
+Una tarea podrá tener:
+
+- Título.
+- Descripción opcional.
+- Fecha opcional.
+- Hora opcional.
+- Prioridad:
+  - Baja.
+  - Normal.
+  - Alta.
+- Estado:
+  - Pendiente.
+  - Completada.
+
+Ejemplo:
+
+```text
+Enviar presupuesto
+Mañana a las 10:00
+Prioridad alta
+```
+
+#### Citas
+
+Una cita podrá tener:
+
+- Título.
+- Fecha.
+- Hora de inicio.
+- Hora de finalización opcional.
+- Lugar opcional.
+- Notas opcionales.
+
+Ejemplo:
+
+```text
+Visita médica
+22 de julio · 10:30–11:15
+Centro de salud
+```
+
+Las citas serán introducidas directamente por el usuario. No es necesario que otras personas puedan reservarlas.
+
+---
+
+### 4.3. Pantalla “Horas”
+
+Permitirá:
+
+- Iniciar la jornada.
+- Terminar la jornada.
+- Ver el tiempo trabajado en la jornada actual.
+- Consultar el total diario.
+- Consultar el total semanal.
+- Consultar el total mensual.
+- Consultar el historial de jornadas.
+- Corregir manualmente un fichaje equivocado.
+- Añadir una jornada manual si se olvidó fichar.
+- Añadir el tiempo de pausa.
+
+Las horas se calcularán usando la entrada y la salida reales. No se guardará simplemente un valor fijo de ocho horas.
+
+Ejemplo:
+
+```text
+Hoy
+
+Entrada: 08:04
+Salida:  16:32
+Pausa:   30 minutos
+
+Total trabajado: 7 h 58 min
+```
+
+---
+
+### 4.4. Pantalla “Ajustes”
+
+En la primera versión incluirá:
+
+- Nombre visible.
+- Zona horaria.
+- Objetivo de horas diarias o semanales.
+- Cierre de sesión.
+
+Más adelante podrá incluir otras preferencias.
+
+---
+
+## 5. Modelo inicial de datos
+
+Todas las tablas tendrán un identificador de usuario.
+
+Supabase aplicará reglas de seguridad para que cada usuario solo pueda consultar y modificar sus propios datos.
+
+### 5.1. Perfiles
+
+Guardará:
+
+- Identificador del usuario.
+- Nombre visible.
+- Zona horaria.
+- Objetivo de horas diarias.
+- Objetivo de horas semanales.
+- Fecha de creación.
+- Fecha de modificación.
+
+### 5.2. Tareas
+
+Guardará:
+
+- Identificador.
+- Usuario propietario.
+- Título.
+- Descripción opcional.
+- Fecha opcional.
+- Hora opcional.
+- Prioridad.
+- Estado.
+- Fecha de creación.
+- Fecha de modificación.
+
+### 5.3. Citas
+
+Guardará:
+
+- Identificador.
+- Usuario propietario.
+- Título.
+- Fecha y hora de inicio.
+- Fecha y hora de finalización opcional.
+- Lugar opcional.
+- Notas opcionales.
+- Fecha de creación.
+- Fecha de modificación.
+
+### 5.4. Jornadas
+
+Guardará:
+
+- Identificador.
+- Usuario propietario.
+- Fecha y hora de entrada.
+- Fecha y hora de salida.
+- Pausa en minutos.
+- Notas opcionales.
+- Fecha de creación.
+- Fecha de modificación.
+
+Las fechas y horas se almacenarán con información de zona horaria para evitar errores causados por cambios de horario.
+
+---
+
+## 6. Plan de desarrollo por fases
+
+## Fase 0: Preparar el proyecto
+
+### Objetivo
+
+Disponer de una base limpia y sencilla para comenzar.
+
+### Trabajo
+
+- Elegir la tecnología de la aplicación web.
+- Crear la estructura del proyecto.
+- Preparar el repositorio.
+- Preparar las variables de entorno.
+- Definir los colores y la tipografía.
+- Preparar la navegación móvil.
+- Crear una página inicial mínima.
+- Configurar los comandos de desarrollo y comprobación.
+
+### Comprobación
+
+La fase estará terminada cuando:
+
+- El proyecto pueda arrancarse localmente.
+- La página inicial se abra correctamente.
+- Funcione tanto en móvil como en ordenador.
+- No existan errores importantes en la consola.
+
+No se conectará todavía a Supabase.
+
+---
+
+## Fase 1: Prototipo visual con datos de prueba
+
+### Objetivo
+
+Comprobar que la aplicación es clara y cómoda antes de conectarla a una base de datos.
+
+### Trabajo
+
+- Construir la pantalla Hoy.
+- Construir la pantalla Agenda.
+- Construir la pantalla Horas.
+- Añadir navegación inferior.
+- Mostrar tareas, citas y jornadas ficticias.
+- Preparar los formularios de tareas y citas.
+- Adaptar el diseño a diferentes tamaños de pantalla.
+- Probar la navegación en un móvil real.
+
+### Comprobación
+
+La fase estará terminada cuando:
+
+- Se pueda navegar entre todas las pantallas.
+- El contenido sea fácil de leer.
+- Los botones sean cómodos en el móvil.
+- El usuario entienda cada función sin necesitar instrucciones.
+- El aspecto visual resulte satisfactorio.
+
+Los datos todavía serán ficticios y no se guardarán permanentemente.
+
+---
+
+## Fase 2: Supabase e inicio de sesión
+
+### Objetivo
+
+Guardar información real de forma segura.
+
+### Trabajo
+
+- Crear un proyecto de Supabase.
+- Crear las tablas necesarias.
+- Añadir restricciones a la base de datos.
+- Activar políticas de seguridad por usuario.
+- Implementar el inicio de sesión.
+- Implementar el cierre de sesión.
+- Conectar la aplicación con Supabase.
+- Proteger las variables de entorno.
+- Evitar que las claves privadas se incluyan en el código o el repositorio.
+
+### Comprobación
+
+La fase estará terminada cuando:
+
+- El usuario pueda iniciar y cerrar sesión.
+- La sesión se mantenga correctamente.
+- Un usuario solo pueda consultar sus propios datos.
+- Un usuario nunca pueda modificar datos de otro usuario.
+- La aplicación muestre correctamente los errores de acceso.
+
+---
+
+## Fase 3: Tareas y citas reales
+
+### Objetivo
+
+Convertir la agenda en una herramienta funcional.
+
+### Trabajo
+
+- Crear tareas.
+- Editar tareas.
+- Completar tareas.
+- Eliminar tareas.
+- Crear citas.
+- Editar citas.
+- Eliminar citas.
+- Mostrar tareas y citas en la pantalla Hoy.
+- Mostrar tareas y citas en el calendario.
+- Validar los formularios.
+- Mostrar mensajes claros cuando ocurra un error.
+- Pedir confirmación antes de eliminar información.
+
+### Comprobación
+
+La fase estará terminada cuando:
+
+- Las tareas y citas se guarden correctamente.
+- Los cambios se mantengan al cerrar y volver a abrir la aplicación.
+- El calendario muestre la información correcta.
+- No se puedan guardar citas con fechas inválidas.
+- Las eliminaciones accidentales estén protegidas mediante confirmación.
+
+---
+
+## Fase 4: Control de horas
+
+### Objetivo
+
+Registrar y consultar la jornada laboral.
+
+### Trabajo
+
+- Añadir el botón para iniciar jornada.
+- Añadir el botón para terminar jornada.
+- Mostrar un contador durante una jornada activa.
+- Evitar que existan dos jornadas abiertas simultáneamente.
+- Calcular el tiempo trabajado.
+- Descontar las pausas.
+- Mostrar totales diarios.
+- Mostrar totales semanales.
+- Mostrar totales mensuales.
+- Permitir correcciones manuales.
+- Permitir añadir una jornada olvidada.
+- Crear un historial de jornadas.
+
+### Comprobación
+
+Se probarán:
+
+- Jornadas normales.
+- Jornadas sin pausa.
+- Jornadas con pausa.
+- Olvidos al terminar la jornada.
+- Correcciones manuales.
+- Jornadas que terminan después de medianoche.
+- Intentos de abrir dos jornadas simultáneamente.
+
+La fase estará terminada cuando todos esos casos se calculen correctamente.
+
+---
+
+## Fase 5: Aplicación instalable
+
+### Objetivo
+
+Hacer que la aplicación se comporte como una aplicación móvil sencilla.
+
+### Trabajo
+
+- Configurar la aplicación como PWA.
+- Añadir nombre e icono.
+- Añadir una pantalla de carga.
+- Optimizar la adaptación a móviles.
+- Mejorar el rendimiento.
+- Mostrar estados sin conexión claros.
+- Publicar la aplicación usando HTTPS.
+
+### Comprobación
+
+La fase estará terminada cuando:
+
+- Se pueda abrir desde una dirección web segura.
+- Se pueda instalar en la pantalla de inicio del móvil.
+- Se abra desde su propio icono.
+- El diseño funcione correctamente en el móvil.
+- Los errores de conexión se expliquen claramente.
+- La aplicación cargue con suficiente rapidez.
+
+La primera versión no necesita funcionar completamente sin conexión.
+
+---
+
+## Fase 6: Prueba real y entrega
+
+### Objetivo
+
+Detectar problemas reales antes de añadir más funciones.
+
+### Trabajo
+
+- Utilizar primero datos de prueba.
+- Crear la cuenta del usuario final.
+- Probar la aplicación durante una o dos semanas.
+- Anotar dificultades y errores.
+- Observar qué funciones se usan realmente.
+- Corregir los problemas detectados.
+- Explicar cómo instalar y utilizar la aplicación.
+- Comprobar que los datos se puedan exportar o recuperar.
+
+### Comprobación
+
+La fase estará terminada cuando:
+
+- Las tareas se utilicen durante varios días sin problemas.
+- Las citas aparezcan correctamente.
+- Las jornadas y sus totales sean fiables.
+- No se pierda información.
+- El usuario pueda utilizar la aplicación sin ayuda constante.
+
+---
+
+## 7. Mejoras futuras opcionales
+
+Estas funciones solo se estudiarán después de completar y probar la primera versión:
+
+- Notificaciones antes de una cita.
+- Recordatorios de tareas.
+- Avisos si no se ha iniciado la jornada.
+- Avisos si se ha olvidado terminar la jornada.
+- Exportación de horas a Excel.
+- Exportación de informes a PDF.
+- Gráficas y estadísticas avanzadas.
+- Botones para iniciar y terminar descansos.
+- Etiquetas y categorías.
+- Modo claro y modo oscuro.
+- Funcionamiento completo sin conexión.
+- Automatizaciones mediante n8n.
+- Recordatorios mediante Telegram.
+
+Estas mejoras no forman parte de la primera versión y no deben retrasar su desarrollo.
+
+---
+
+## 8. Seguridad y privacidad
+
+Se aplicarán las siguientes medidas:
+
+- Cada usuario solo podrá acceder a sus propios registros.
+- Se utilizarán las políticas de seguridad de Supabase.
+- La seguridad no dependerá únicamente de filtros visuales.
+- No se guardarán contraseñas dentro del código.
+- No se guardarán claves privadas dentro del código.
+- Los archivos de variables de entorno no se subirán al repositorio.
+- La aplicación publicada utilizará HTTPS.
+- Los datos se validarán en los formularios y en la base de datos.
+- Las eliminaciones importantes pedirán confirmación.
+- Se comprobará cómo exportar y restaurar la información.
+- No se almacenarán más datos personales de los necesarios.
+
+---
+
+## 9. Criterios para considerar terminada la primera versión
+
+La primera versión estará terminada cuando el usuario pueda:
+
+1. Iniciar sesión desde el móvil y el ordenador.
+2. Ver el resumen del día.
+3. Crear, editar, completar y eliminar tareas.
+4. Crear, editar y eliminar citas personales.
+5. Consultar sus tareas y citas en un calendario.
+6. Iniciar y terminar la jornada.
+7. Corregir jornadas equivocadas.
+8. Consultar las horas del día, semana y mes.
+9. Instalar la aplicación en la pantalla de inicio del móvil.
+10. Utilizarla durante varios días sin perder información.
+
+---
+
+## 10. Decisiones tomadas
+
+Para mantener el proyecto sencillo:
+
+- No se utilizará Appsmith.
+- No se utilizará Cal.com porque las citas serán introducidas por el propio usuario.
+- No se utilizará n8n en la primera versión.
+- No se utilizará Telegram en la primera versión.
+- No se administrará un servidor PostgreSQL propio.
+- Supabase gestionará los usuarios y la base de datos.
+- La aplicación se desarrollará primero con datos ficticios.
+- Cada fase se probará antes de continuar.
+
+---
+
+## 11. Próximo paso
+
+Comenzar únicamente con la **Fase 0**.
+
+Antes de programar todas las funciones:
+
+1. Se elegirá la tecnología del frontend.
+2. Se creará la estructura básica del proyecto.
+3. Se construirá una pantalla local muy sencilla.
+4. Se comprobará que funciona correctamente.
+
+Cuando esa base esté estable, se avanzará a la Fase 1.
+
+No se contratarán ni configurarán servicios adicionales por adelantado.
