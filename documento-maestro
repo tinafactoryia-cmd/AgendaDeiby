@@ -579,15 +579,100 @@ Para mantener el proyecto sencillo:
 
 ## 11. Próximo paso
 
-Comenzar únicamente con la **Fase 0**.
+Esperar los comentarios del usuario final sobre el prototipo publicado. Si no solicita cambios importantes, comenzar la **Fase 2: Supabase e inicio de sesión**.
 
-Antes de programar todas las funciones:
+El orden previsto para la Fase 2 es:
 
-1. Se elegirá la tecnología del frontend.
-2. Se creará la estructura básica del proyecto.
-3. Se construirá una pantalla local muy sencilla.
-4. Se comprobará que funciona correctamente.
+1. Crear las tablas de perfiles, tareas, citas y jornadas.
+2. Añadir restricciones e índices.
+3. Activar y verificar las políticas RLS por usuario.
+4. Configurar Supabase Auth.
+5. Instalar y configurar el cliente de Supabase en la aplicación.
+6. Implementar inicio y cierre de sesión.
+7. Sustituir progresivamente los datos ficticios por datos reales.
+8. Verificar que un usuario nunca pueda acceder a datos de otro.
 
-Cuando esa base esté estable, se avanzará a la Fase 1.
+No se utilizará la contraseña de PostgreSQL dentro de la aplicación. Solo se utilizarán la URL pública del proyecto y su clave publicable.
 
-No se contratarán ni configurarán servicios adicionales por adelantado.
+---
+
+## 12. Estado actual del proyecto
+
+**Última actualización:** 19 de julio de 2026.
+
+### Fase 0: completada
+
+- Tecnología elegida: React 19, TypeScript y Vite 8.
+- Proyecto creado e inicializado con Git.
+- Diseño base adaptable a móvil y ordenador.
+- Variables de entorno protegidas mediante `.gitignore`.
+- Comandos de desarrollo, lint y compilación funcionando.
+- La compilación de producción termina correctamente.
+
+### Fase 1: completada y validada
+
+- Prototipo visual navegable con datos ficticios.
+- Pantallas disponibles: Hoy, Agenda, Horas y Ajustes.
+- Calendario interactivo.
+- Creación simulada de tareas y citas.
+- Tareas que pueden marcarse como completadas.
+- Formularios adaptados a móvil.
+- Historial y resúmenes de horas ficticios.
+- El diseño ha sido revisado y aprobado inicialmente.
+
+Los datos todavía viven únicamente en la memoria del navegador y se reinician al recargar la página.
+
+### Decisión sobre las jornadas
+
+Se descartó el fichaje mediante botones de entrada y salida en tiempo real.
+
+El usuario registrará la jornada manualmente al terminar el día indicando:
+
+- Fecha.
+- Hora de inicio.
+- Hora de salida.
+- Tiempo total de pausa, por ejemplo para comer.
+
+La aplicación calculará:
+
+```text
+horas trabajadas = salida - entrada - pausa
+```
+
+El prototipo ya incluye el formulario de registro manual y muestra el total calculado.
+
+### Supabase
+
+- El proyecto de Supabase ya está creado.
+- Estado comprobado: Healthy.
+- Región: Central EU, Frankfurt.
+- Data API activada.
+- Exposición automática de tablas desactivada.
+- RLS automático activado.
+- Todavía no se han creado tablas.
+- Todavía no se han añadido credenciales al proyecto local.
+- No se ha conectado aún la aplicación.
+
+No se deben incluir en GitHub la contraseña de PostgreSQL, claves privadas ni la clave `service_role`.
+
+### GitHub y publicación
+
+- Cuenta propietaria: `tinafactoryia-cmd`.
+- Repositorio: <https://github.com/tinafactoryia-cmd/AgendaDeiby>
+- Rama principal: `main`.
+- GitHub Pages configurado mediante GitHub Actions.
+- Aplicación pública: <https://tinafactoryia-cmd.github.io/AgendaDeiby/>
+- El despliegue automático está verificado y funciona.
+- Cada push a `main` vuelve a compilar y publicar la aplicación.
+
+El enlace público ya se ha enviado al usuario final para que pruebe la interfaz.
+
+### Funciones futuras recordadas
+
+Después de completar la aplicación básica se estudiarán:
+
+- Avisos de tareas próximas.
+- Avisos de citas próximas.
+- Recordatorios relacionados con jornadas no registradas.
+
+Estas notificaciones no forman parte de la Fase 2 y no deben retrasar la conexión básica con Supabase.
